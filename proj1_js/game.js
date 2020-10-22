@@ -208,6 +208,51 @@ function newColor() {
   return Math.floor(Math.random() * 255);
 }
 
+function movep2(slot) {
+  var num = slot.getCount();
+  var i;
+  mArr = slot.getMarbles();
+  let loop = false;
+  for (i = 1; i<= num; i++) {
+    let position = slot.position;
+    //console.log("position is " + position);
+    let slotIndex = (position + i) % 14;
+    if (slotIndex != 0 && loop === false) {
+      var tempSlot = slotArr[slotIndex];
+      tempSlot.addMarble(mArr[i-1]);
+      //console.log(slotIndex);
+      //console.log(tempSlot);
+      console.log(tempSlot.getCount());
+      if (tempSlot.position < 7) {
+        console.log(tempSlot.button);
+        var coor = getCoor(false, tempSlot.button, tempSlot.getCount());
+        console.log(coor);
+      } else  {
+        var coor = getCoor(true, tempSlot.button, tempSlot.getCount());
+      }
+      // console.log(coor);
+      mArr[i-1].move(coor[0], coor[1]);
+      
+    }
+    else if (slotIndex == 0 || loop === true) {
+      loop = true;
+      let tempIndex = slotIndex + 1;
+      var tempSlot = slotArr[tempIndex];
+      tempSlot.addMarble(mArr[i-1]);
+      let coor = getCoor(true, tempSlot.button, tempSlot.getCount());
+      mArr[i-1].move(coor[0], coor[1]);
+
+    }
+  }
+
+  //check if is single marble across from other marbles
+  //take if so :)
+
+
+
+  slot.empty();
+}
+
 function movep1(slot) {
   var num = slot.getCount();
   var i;
@@ -223,12 +268,13 @@ function movep1(slot) {
       // console.log(slotIndex);
       // console.log(tempSlot);
       // console.log(tempSlot.getCount());
-      if (tempSlot.position <= 7) {
+      //var coor = getCoor(true, tempSlot.button, tempSlot.getCount());
+      if (tempSlot.position <=7 ) {
         var coor = getCoor(false, tempSlot.button, tempSlot.getCount());
       } else  {
         var coor = getCoor(true, tempSlot.button, tempSlot.getCount());
       }
-      console.log("here is the coor" + coor);
+      console.log(coor);
       mArr[i-1].move(coor[0], coor[1]);
     }
     else if (slotIndex == 7 || loop === true) {
@@ -237,35 +283,57 @@ function movep1(slot) {
       var tempSlot = slotArr[tempIndex];
       tempSlot.addMarble(mArr[i-1]);
       let coor = getCoor(true, tempSlot.button, tempSlot.getCount());
-      console.log("here is the coor" + coor);
       mArr[i-1].move(coor[0], coor[1]);
 
     }
   }
+
+  //check if is single marble across from other marbles
+  //take if so :)
+
+
+
   slot.empty();
 }
 
 function getCoor(p1, slot, marble) {
   coor = new Array(2);
   if (p1) {
-    if (marble < 7){
-      coor[0] =  170 * slot + 30 + 50 * ((marble-1)%2);
-      coor[1] = (Math.floor((marble-1)/2)) * 50 + 70;
-      console.log("he" + slot);
+    if (slot === 0) {
+      coor[0] = 1220 + 50 * ((marble-1)%2) + 10 * Math.floor(marble/18);
+      coor[1] = 450 - 50 * Math.floor((marble-1)/2) - 10 * Math.floor(marble/18);
+      console.log("sup");
     }
     else {
-      coor[0] =  170*slot + 60 + 50 * ((marble-1)%2);
-      coor[1] = (Math.floor((marble-7)/2)) * 50 + 70;
+      if (marble < 7){
+        coor[0] =  170 * slot + 30 + 50 * ((marble-1)%2);
+        coor[1] = (Math.floor((marble-1)/2)) * 50 + 70;
+        console.log("he" + slot);
+      }
+      else {
+        coor[0] =  170*slot + 60 + 50 * ((marble-1)%2);
+        coor[1] = (Math.floor((marble-7)/2)) * 50 + 70;
+      }
     }
+    
   }
   else {
-    if (marble < 7){
-      coor[0] =  170*slot + 30 + 50 * ((marble-1)%2);
-      coor[1] = (Math.floor((marble-1)/2)) * 50 + 70 + 250;
+    if (slot == 0) {
+      if (slot === 0) {
+        coor[0] = 50 + 50 * ((marble-1)%2) + 10 * Math.floor(marble/18);
+        coor[1] = 450 - 50 * Math.floor((marble-1)/2) - 10 * Math.floor(marble/18);
+        console.log("sup");
+      }
     }
     else {
-      coor[0] =  170*slot + 60 + 50 * ((marble-1)%2);
-      coor[1] = (Math.floor((marble-7)/2)) * 50 + 70 + 250;
+      if (marble < 7){
+        coor[0] =  170*slot + 30 + 50 * ((marble-1)%2);
+        coor[1] = (Math.floor((marble-1)/2)) * 50 + 70 + 250;
+      }
+      else {
+        coor[0] =  170*slot + 60 + 50 * ((marble-1)%2);
+        coor[1] = (Math.floor((marble-7)/2)) * 50 + 70 + 250;
+      }
     }
   }
   return coor;
@@ -353,6 +421,8 @@ var s3 = new Slot("B3", 3, 3);
 var s4 = new Slot("B4", 4, 4);
 var s5 = new Slot("B5", 5, 5);
 var s6 = new Slot("B6", 6, 6);
+var a_pocket = new Slot("AP", 0, 0);
+var b_pocket = new Slot("BP", 7, 0);
 
 s13.start4(a11, a12, a13, a14);
 s12.start4(a21, a22, a23, a24);
@@ -368,15 +438,15 @@ s4.start4(b41, b42, b43, b44);
 s5.start4(b51, b52, b53, b54);
 s6.start4(b61, b62, b63, b64);
 
-var slotArr = [aContainer, s1, s2, s3, s4, s5, s6, bContainer, s8, s9, s10, s11, s12, s13];
+var slotArr = [a_pocket, s1, s2, s3, s4, s5, s6, b_pocket, s8, s9, s10, s11, s12, s13];
 switchTurn(true);
 
-movep1(s9);
+// movep1(s9);
+movep2(s5);
+// console.log(s10);
+// console.log(s9);
 
-console.log(s10);
-console.log(s9);
-
-movep1(s10);
-movep1(s11);
-movep1(s12);
+// movep1(s10);
+// movep1(s11);
+// movep1(s12);
 
