@@ -211,6 +211,7 @@ function newColor() {
 function movep2(slot) {
   var num = slot.getCount();
   var i;
+  var playAgain = false;
   mArr = slot.getMarbles();
   let loop = false;
   for (i = 1; i<= num; i++) {
@@ -243,6 +244,10 @@ function movep2(slot) {
       mArr[i-1].move(coor[0], coor[1]);
 
     }
+    if(i == num && slotIndex == 7)
+    {
+      playAgain = true;
+    }
   }
 
   //check if is single marble across from other marbles
@@ -251,10 +256,12 @@ function movep2(slot) {
 
 
   slot.empty();
+  return playAgain;
 }
 
 function movep1(slot) {
   var num = slot.getCount();
+  var playAgain = false;
   var i;
   mArr = slot.getMarbles();
   let loop = false;
@@ -286,6 +293,10 @@ function movep1(slot) {
       mArr[i-1].move(coor[0], coor[1]);
 
     }
+    if(i == num && slotIndex == 0)
+    {
+      playAgain = true;
+    }
   }
 
   //check if is single marble across from other marbles
@@ -294,6 +305,7 @@ function movep1(slot) {
 
 
   slot.empty();
+  return playAgain;
 }
 
 function getCoor(p1, slot, marble) {
@@ -441,12 +453,12 @@ s6.start4(b61, b62, b63, b64);
 var slotArr = [a_pocket, s1, s2, s3, s4, s5, s6, b_pocket, s8, s9, s10, s11, s12, s13];
 switchTurn(true);
 
-// movep1(s9);
-movep2(s5);
+console.log(movep2(s5));
+
+
 // console.log(s10);
 // console.log(s9);
 
 // movep1(s10);
 // movep1(s11);
 // movep1(s12);
-
