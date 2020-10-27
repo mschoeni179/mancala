@@ -55,79 +55,61 @@ var board = {
     }    
 }
 function switchTurn(p1) {
-  if (p1) {
-    document.getElementById("A1").hidden = false;
-    document.getElementById("A2").hidden = false;
-    document.getElementById("A4").hidden = false;
-    document.getElementById("A3").hidden = false;
-    document.getElementById("A5").hidden = false;
-    document.getElementById("A6").hidden = false;
-    document.getElementById("B1").hidden = true;
-    document.getElementById("B2").hidden = true;
-    document.getElementById("B4").hidden = true;
-    document.getElementById("B3").hidden = true;
-    document.getElementById("B5").hidden = true;
-    document.getElementById("B6").hidden = true;
-
+  let r = getTotals();
+  document.getElementById("ranking").innerHTML = "Current ranking (A:B) =  " +r[0] +  " to " + r[1];
+  if (checkWinner()) {
+    document.getElementById("turn").innerHTML = "Game over!";
+    //window.alert("")
+    document.getElementById("B1").disabled = true;
+    document.getElementById("B2").disabled = true;
+    document.getElementById("B4").disabled = true;
+    document.getElementById("B3").disabled = true;
+    document.getElementById("B5").disabled = true;
+    document.getElementById("B6").disabled = true;
+    document.getElementById("A1").disabled = true;
+    document.getElementById("A2").disabled = true;
+    document.getElementById("A4").disabled = true;
+    document.getElementById("A3").disabled = true;
+    document.getElementById("A5").disabled = true;
+    document.getElementById("A6").disabled = true;
   }
   else {
-    document.getElementById("B1").hidden = false;
-    document.getElementById("B2").hidden = false;
-    document.getElementById("B4").hidden = false;
-    document.getElementById("B3").hidden = false;
-    document.getElementById("B5").hidden = false;
-    document.getElementById("B6").hidden = false;
-    document.getElementById("A1").hidden = true;
-    document.getElementById("A2").hidden = true;
-    document.getElementById("A4").hidden = true;
-    document.getElementById("A3").hidden = true;
-    document.getElementById("A5").hidden = true;
-    document.getElementById("A6").hidden = true;
+    if (p1) {
+      document.getElementById("turn").innerHTML = "Currently Player A's turn";
+      document.getElementById("A1").disabled = false;
+      document.getElementById("A2").disabled = false;
+      document.getElementById("A4").disabled = false;
+      document.getElementById("A3").disabled = false;
+      document.getElementById("A5").disabled = false;
+      document.getElementById("A6").disabled = false;
+      document.getElementById("B1").disabled = true;
+      document.getElementById("B2").disabled = true;
+      document.getElementById("B4").disabled = true;
+      document.getElementById("B3").disabled = true;
+      document.getElementById("B5").disabled = true;
+      document.getElementById("B6").disabled = true;
+
+    }
+    else {
+      document.getElementById("turn").innerHTML = "Currently Player B's turn";
+      document.getElementById("B1").disabled = false;
+      document.getElementById("B2").disabled = false;
+      document.getElementById("B4").disabled = false;
+      document.getElementById("B3").disabled = false;
+      document.getElementById("B5").disabled = false;
+      document.getElementById("B6").disabled = false;
+      document.getElementById("A1").disabled = true;
+      document.getElementById("A2").disabled = true;
+      document.getElementById("A4").disabled = true;
+      document.getElementById("A3").disabled = true;
+      document.getElementById("A5").disabled = true;
+      document.getElementById("A6").disabled = true;
 
 
+    }
   }
 
 }
-
-// var aContainer = {
-//   num : 0,
-//   marbles : new Array(0),
-//   increment : function() {
-//     this.num = this.num + 1;
-//   },
-//   getCount : function() {
-//     return this.num;
-//   },
-//   addMarble : function(marbleNew) {
-//     this.increment();
-//     let n = this.getCount();
-//     this.marbles[n-1] = marbleNew
-
-//   },
-//   getMarbles : function() {
-//     return this.marbles;
-//   }
-// }
-
-// var bContainer = {
-//   num : 0,
-//   marbles : new Array(0),
-//   increment : function() {
-//     this.num = this.num + 1;
-//   },
-//   getCount : function() {
-//     return this.num;
-//   },
-//   addMarble : function(marbleNew) {
-//     this.increment();
-//     let n = this.getCount();
-//     this.marbles[n-1] = marbleNew
-
-//   },
-//   getMarbles : function() {
-//     return this.marbles;
-//   }
-// }
 
 class Slot {
   constructor(name, position, button) {
@@ -255,7 +237,7 @@ function movep2(slot) {
       {
         playAgain = true;
       }
-      else if (slotArr[slotIndex].getCount() == 1 && slotIndex < 7)
+      else if (slotArr[slotIndex].getCount() == 1 && slotIndex < 7 && opposite.getCount() > 0)
       {
         window.setTimeout(function(){
           let pocket = slotArr[slotIndex];
@@ -272,14 +254,18 @@ function movep2(slot) {
           }
           opposite.emptyContents();
         } , 1000);
-        window.alert("You stole player 1's marbles!");
+        window.alert("You stole Player A's marbles!");
         
       }
     }
   }
-
+  let r = getTotals();
+  document.getElementById("ranking").innerHTML = "Current ranking (A:B) =  " +r[0] +  " to " + r[1];
   slot.emptyContents();
-  return playAgain;
+  turn1 = !playAgain
+  if (!playAgain) {
+    switchTurn(true);
+  }
 }
 
 function movep1(slot) {
@@ -318,7 +304,7 @@ function movep1(slot) {
       {
         playAgain = true;
       }
-      else if (slotArr[slotIndex].getCount() == 1 && slotIndex > 7)
+      else if (slotArr[slotIndex].getCount() == 1 && slotIndex > 7 && opposite.getCount() > 0)
       {
         window.setTimeout(function(){
           let pocket = slotArr[slotIndex];
@@ -335,19 +321,18 @@ function movep1(slot) {
           }
           opposite.emptyContents();
         } , 1000);
-        window.alert("You stole player 2's marbles!");
+        window.alert("You stole Player B's marbles!");
       }
     }
     
   }
-
-  //check if is single marble across from other marbles
-  //take if so :)
-
-
-
+  let r = getTotals();
+  document.getElementById("ranking").innerHTML = "Current ranking (A:B) =  " +r[0] +  " to " + r[1];
   slot.emptyContents();
-  return playAgain;
+  turn1 = playAgain;
+  if (!playAgain) {
+    switchTurn(false);
+  }
 }
 
 function getCoor(p1, slot, marble) {
@@ -392,6 +377,33 @@ function getCoor(p1, slot, marble) {
   }
   return coor;
 }
+
+function getTotals() {
+  var total = new Array(2)
+  total[0] = a_pocket.getCount();
+  total[1] = b_pocket.getCount();
+  return total;
+}
+
+function checkWinner() {
+  var i = 1;
+  var a_marb = 0;
+  var b_marb = 0;
+  for (i=1; i< 7; i++) {
+    b_marb += slotArr[i].getCount();
+  }
+  for (i=8; i< 14; i++) {
+    a_marb += slotArr[i].getCount();
+  }
+  if (a_marb == 0 || b_marb == 0) {
+    return true;
+  }
+  else {
+    return false;
+  }
+
+}
+
 function setUp(){
     document.getElementById("A1").addEventListener("click", () => movep1(s13));
     document.getElementById("A2").addEventListener("click", () => movep1(s12));
@@ -405,21 +417,6 @@ function setUp(){
     document.getElementById("B4").addEventListener("click", () => movep2(s4));
     document.getElementById("B5").addEventListener("click", () => movep2(s5));
     document.getElementById("B6").addEventListener("click", () => movep2(s6)); 
-    // document.getElementById("A1").onclick =  movep1(s13);
-    // document.getElementById("A2").onclick =  movep1(s12);
-    // document.getElementById("A3").onclick =  movep1(s11);;
-    // document.getElementById("A4").onclick =  movep1(s10);;
-    // document.getElementById("A5").onclick =  movep1(s9);;
-    // document.getElementById("A6").onclick =  movep1(s8);;
-    // document.getElementById("B1").addEventListener("click", movep2(s1));
-    // document.getElementById("B2").addEventListener("click", movep2(s2));
-    // document.getElementById("B4").addEventListener("click", movep2(s3));
-    // document.getElementById("B3").addEventListener("click", movep2(s4));
-    // document.getElementById("B5").addEventListener("click", movep2(s5));
-    // document.getElementById("B6").addEventListener("click", movep2(s6)); 
-    // document.getElementById("A1").onclick = function() {
-    //   console.log("hiiiiii");
-    // }
 }
 
 board.start();
@@ -519,16 +516,9 @@ s5.start4(b51, b52, b53, b54);
 s6.start4(b61, b62, b63, b64);
 
 var slotArr = [a_pocket, s1, s2, s3, s4, s5, s6, b_pocket, s8, s9, s10, s11, s12, s13];
-
+var turn1 = true;
 setUp();
-//switchTurn(true);
+switchTurn(true);
 
-// console.log(movep2(s5));
-// movep2(s1);
 
-// console.log(s10);
-// console.log(s9);
 
-// movep1(s10);
-// movep1(s11);
-// movep1(s12);
