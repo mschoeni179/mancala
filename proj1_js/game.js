@@ -1,4 +1,5 @@
 function placeButton(x, y, id) {
+  //https://stackoverflow.com/questions/4814997/javascript-absolute-positioning 
   var button1 = document.createElement('button');
       button1.id = id;
       button1.style.position = 'absolute';
@@ -9,8 +10,10 @@ function placeButton(x, y, id) {
       button1.innerHTML = id
       document.body.appendChild(button1);
 }
-//https://www.w3schools.com/graphics/game_intro.asp 
+
 var board = {
+  //https://www.w3schools.com/graphics/game_intro.asp 
+  //https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Drawing_shapes
     start : function() {
       let canvas = document.getElementById('canvas');
       let ctx = canvas.getContext('2d');
@@ -86,45 +89,45 @@ function switchTurn(p1) {
 
 }
 
-var aContainer = {
-  num : 0,
-  marbles : new Array(0),
-  increment : function() {
-    this.num = this.num + 1;
-  },
-  getCount : function() {
-    return this.num;
-  },
-  addMarble : function(marbleNew) {
-    this.increment();
-    let n = this.getCount();
-    this.marbles[n-1] = marbleNew
+// var aContainer = {
+//   num : 0,
+//   marbles : new Array(0),
+//   increment : function() {
+//     this.num = this.num + 1;
+//   },
+//   getCount : function() {
+//     return this.num;
+//   },
+//   addMarble : function(marbleNew) {
+//     this.increment();
+//     let n = this.getCount();
+//     this.marbles[n-1] = marbleNew
 
-  },
-  getMarbles : function() {
-    return this.marbles;
-  }
-}
+//   },
+//   getMarbles : function() {
+//     return this.marbles;
+//   }
+// }
 
-var bContainer = {
-  num : 0,
-  marbles : new Array(0),
-  increment : function() {
-    this.num = this.num + 1;
-  },
-  getCount : function() {
-    return this.num;
-  },
-  addMarble : function(marbleNew) {
-    this.increment();
-    let n = this.getCount();
-    this.marbles[n-1] = marbleNew
+// var bContainer = {
+//   num : 0,
+//   marbles : new Array(0),
+//   increment : function() {
+//     this.num = this.num + 1;
+//   },
+//   getCount : function() {
+//     return this.num;
+//   },
+//   addMarble : function(marbleNew) {
+//     this.increment();
+//     let n = this.getCount();
+//     this.marbles[n-1] = marbleNew
 
-  },
-  getMarbles : function() {
-    return this.marbles;
-  }
-}
+//   },
+//   getMarbles : function() {
+//     return this.marbles;
+//   }
+// }
 
 class Slot {
   constructor(name, position, button) {
@@ -154,9 +157,12 @@ class Slot {
     this.addMarble(m3);
     this.addMarble(m4);
   }
-  empty() {
+  emptyContents() {
     this.num = 0;
     this.marbles = new Array(0);
+  }
+  getOpposite() {
+     return 14 - this.position;
   }
 }
 
@@ -187,9 +193,11 @@ function marble(x, y, radius, red, green, blue) {
       ctx.clearRect(this.x - this.radius, this.y-this.radius, this.radius*2, this.radius*2);
     },
     this.move = function(x2,y2) {
+      
       this.clear();
       this.x = x2;
       this.y = y2
+      //window.setTimeout(()=> this.reload(), 1000);
       this.reload();
 
     },
@@ -212,7 +220,7 @@ function movep2(slot) {
   var num = slot.getCount();
   var i;
   var playAgain = false;
-  mArr = slot.getMarbles();
+  let mArr = slot.getMarbles();
   let loop = false;
   for (i = 1; i<= num; i++) {
     let position = slot.position;
@@ -221,13 +229,11 @@ function movep2(slot) {
     if (slotIndex != 0 && loop === false) {
       var tempSlot = slotArr[slotIndex];
       tempSlot.addMarble(mArr[i-1]);
-      //console.log(slotIndex);
-      //console.log(tempSlot);
-      console.log(tempSlot.getCount());
+
       if (tempSlot.position < 7) {
-        console.log(tempSlot.button);
+        //console.log(tempSlot.button);
         var coor = getCoor(false, tempSlot.button, tempSlot.getCount());
-        console.log(coor);
+        //console.log(coor);
       } else  {
         var coor = getCoor(true, tempSlot.button, tempSlot.getCount());
       }
@@ -244,18 +250,35 @@ function movep2(slot) {
       mArr[i-1].move(coor[0], coor[1]);
 
     }
-    if(i == num && slotIndex == 7)
-    {
-      playAgain = true;
+    if(i == num) {
+      if (slotIndex == 7)
+      {
+        playAgain = true;
+      }
+      else if (slotArr[slotIndex].getCount() == 1 && slotIndex < 7)
+      {
+        window.setTimeout(function(){
+          let pocket = slotArr[slotIndex];
+          let opposite = slotArr[pocket.getOpposite()]; //opposite is the pocket you just stole
+          let n = opposite.getCount();
+          var mArrO = opposite.getMarbles();
+          console.log(n);
+          let j = 0;
+          for(j=1; j<= n; j++) {
+            slotArr[7].addMarble(mArrO[j-1]);
+            let coor2 = getCoor(true, b_pocket.button, b_pocket.getCount());
+            console.log(coor2);
+            mArrO[j-1].move(coor2[0], coor2[1]);
+          }
+          opposite.emptyContents();
+        } , 1000);
+        window.alert("You stole player 1's marbles!");
+        
+      }
     }
   }
 
-  //check if is single marble across from other marbles
-  //take if so :)
-
-
-
-  slot.empty();
+  slot.emptyContents();
   return playAgain;
 }
 
@@ -263,7 +286,7 @@ function movep1(slot) {
   var num = slot.getCount();
   var playAgain = false;
   var i;
-  mArr = slot.getMarbles();
+  let mArr = slot.getMarbles();
   let loop = false;
   for (i = 1; i<= num; i++) {
     let position = slot.position;
@@ -272,16 +295,13 @@ function movep1(slot) {
     if (slotIndex != 7 && loop === false) {
       var tempSlot = slotArr[slotIndex];
       tempSlot.addMarble(mArr[i-1]);
-      // console.log(slotIndex);
-      // console.log(tempSlot);
-      // console.log(tempSlot.getCount());
-      //var coor = getCoor(true, tempSlot.button, tempSlot.getCount());
+
       if (tempSlot.position <=7 ) {
         var coor = getCoor(false, tempSlot.button, tempSlot.getCount());
       } else  {
         var coor = getCoor(true, tempSlot.button, tempSlot.getCount());
       }
-      console.log(coor);
+      // console.log(coor);
       mArr[i-1].move(coor[0], coor[1]);
     }
     else if (slotIndex == 7 || loop === true) {
@@ -293,10 +313,32 @@ function movep1(slot) {
       mArr[i-1].move(coor[0], coor[1]);
 
     }
-    if(i == num && slotIndex == 0)
-    {
-      playAgain = true;
+    if(i == num) {
+      if (slotIndex == 0)
+      {
+        playAgain = true;
+      }
+      else if (slotArr[slotIndex].getCount() == 1 && slotIndex > 7)
+      {
+        window.setTimeout(function(){
+          let pocket = slotArr[slotIndex];
+          let opposite = slotArr[pocket.getOpposite()]; //opposite is the pocket you just stole
+          let n = opposite.getCount();
+          var mArrO = opposite.getMarbles();
+          console.log(n);
+          let j = 0;
+          for(j=1; j<= n; j++) {
+            slotArr[0].addMarble(mArrO[j-1]);
+            let coor2 = getCoor(false, a_pocket.button, a_pocket.getCount());
+            console.log(coor2);
+            mArrO[j-1].move(coor2[0], coor2[1]);
+          }
+          opposite.emptyContents();
+        } , 1000);
+        window.alert("You stole player 2's marbles!");
+      }
     }
+    
   }
 
   //check if is single marble across from other marbles
@@ -304,7 +346,7 @@ function movep1(slot) {
 
 
 
-  slot.empty();
+  slot.emptyContents();
   return playAgain;
 }
 
@@ -314,13 +356,13 @@ function getCoor(p1, slot, marble) {
     if (slot === 0) {
       coor[0] = 1220 + 50 * ((marble-1)%2) + 10 * Math.floor(marble/18);
       coor[1] = 450 - 50 * Math.floor((marble-1)/2) - 10 * Math.floor(marble/18);
-      console.log("sup");
+      // console.log("sup");
     }
     else {
       if (marble < 7){
         coor[0] =  170 * slot + 30 + 50 * ((marble-1)%2);
         coor[1] = (Math.floor((marble-1)/2)) * 50 + 70;
-        console.log("he" + slot);
+        // console.log("he" + slot);
       }
       else {
         coor[0] =  170*slot + 60 + 50 * ((marble-1)%2);
@@ -334,7 +376,7 @@ function getCoor(p1, slot, marble) {
       if (slot === 0) {
         coor[0] = 50 + 50 * ((marble-1)%2) + 10 * Math.floor(marble/18);
         coor[1] = 450 - 50 * Math.floor((marble-1)/2) - 10 * Math.floor(marble/18);
-        console.log("sup");
+        // console.log("sup");
       }
     }
     else {
@@ -350,8 +392,34 @@ function getCoor(p1, slot, marble) {
   }
   return coor;
 }
-function play(){
-  board.start();
+function setUp(){
+    document.getElementById("A1").addEventListener("click", () => movep1(s13));
+    document.getElementById("A2").addEventListener("click", () => movep1(s12));
+    document.getElementById("A3").addEventListener("click", () => movep1(s11));
+    document.getElementById("A4").addEventListener("click", () => movep1(s10));
+    document.getElementById("A5").addEventListener("click", () => movep1(s9));
+    document.getElementById("A6").addEventListener("click", () => movep1(s8));
+    document.getElementById("B1").addEventListener("click", () => movep2(s1));
+    document.getElementById("B2").addEventListener("click", () => movep2(s2));
+    document.getElementById("B3").addEventListener("click", () => movep2(s3));
+    document.getElementById("B4").addEventListener("click", () => movep2(s4));
+    document.getElementById("B5").addEventListener("click", () => movep2(s5));
+    document.getElementById("B6").addEventListener("click", () => movep2(s6)); 
+    // document.getElementById("A1").onclick =  movep1(s13);
+    // document.getElementById("A2").onclick =  movep1(s12);
+    // document.getElementById("A3").onclick =  movep1(s11);;
+    // document.getElementById("A4").onclick =  movep1(s10);;
+    // document.getElementById("A5").onclick =  movep1(s9);;
+    // document.getElementById("A6").onclick =  movep1(s8);;
+    // document.getElementById("B1").addEventListener("click", movep2(s1));
+    // document.getElementById("B2").addEventListener("click", movep2(s2));
+    // document.getElementById("B4").addEventListener("click", movep2(s3));
+    // document.getElementById("B3").addEventListener("click", movep2(s4));
+    // document.getElementById("B5").addEventListener("click", movep2(s5));
+    // document.getElementById("B6").addEventListener("click", movep2(s6)); 
+    // document.getElementById("A1").onclick = function() {
+    //   console.log("hiiiiii");
+    // }
 }
 
 board.start();
@@ -451,10 +519,12 @@ s5.start4(b51, b52, b53, b54);
 s6.start4(b61, b62, b63, b64);
 
 var slotArr = [a_pocket, s1, s2, s3, s4, s5, s6, b_pocket, s8, s9, s10, s11, s12, s13];
-switchTurn(true);
 
-console.log(movep2(s5));
+setUp();
+//switchTurn(true);
 
+// console.log(movep2(s5));
+// movep2(s1);
 
 // console.log(s10);
 // console.log(s9);
