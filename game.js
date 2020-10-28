@@ -54,9 +54,7 @@ var board = {
       
     }    
 }
-function switchTurn(p1) {
-  let r = getTotals();
-  document.getElementById("ranking").innerHTML = "Current ranking (A:B) =  " +r[0] +  " to " + r[1];
+function endGame() {
   if (checkWinner()) {
     document.getElementById("turn").innerHTML = "Game over!";
     let r = getTotals();
@@ -82,6 +80,14 @@ function switchTurn(p1) {
     document.getElementById("A3").disabled = true;
     document.getElementById("A5").disabled = true;
     document.getElementById("A6").disabled = true;
+  }
+}
+
+function switchTurn(p1) {
+  let r = getTotals();
+  document.getElementById("ranking").innerHTML = "Current ranking (A:B) =  " +r[0] +  " to " + r[1];
+  if (checkWinner()) {
+    endGame();
   }
   else {
     if (p1) {
@@ -213,6 +219,7 @@ function newColor() {
 }
 
 function movep2(slot) {
+  console.log(slot);
   var num = slot.getCount();
   var i;
   var playAgain = false;
@@ -253,31 +260,32 @@ function movep2(slot) {
       }
       else if (slotArr[slotIndex].getCount() == 1 && slotIndex < 7)
       {
-        window.setTimeout(function(){
-          let pocket = slotArr[slotIndex];
-          let opposite = slotArr[pocket.getOpposite()]; //opposite is the pocket you just stole
-          let n = opposite.getCount();
-          var mArrO = opposite.getMarbles();
-          console.log(n);
-          let j = 0;
-          for(j=1; j<= n; j++) {
-            slotArr[7].addMarble(mArrO[j-1]);
-            let coor2 = getCoor(true, b_pocket.button, b_pocket.getCount());
-            console.log(coor2);
-            mArrO[j-1].move(coor2[0], coor2[1]);
-          }
-          opposite.emptyContents();
-
-          let temp = slotArr[slotIndex].getMarbles()
-          slotArr[7].addMarble(temp[0]);
-          let coor2 = getCoor(true, b_pocket.button, b_pocket.getCount());
-          temp[0].move(coor2[0], coor2[1]);
-          slotArr[slotIndex].emptyContents();
-
-        } , 1000);
         let pocket = slotArr[slotIndex];
-        if (slotArr[pocket.getOpposite()].getCount() != 0) {        
+        if (slotArr[pocket.getOpposite()].getCount() != 0) { 
+          window.setTimeout(function(){
+            let pocket = slotArr[slotIndex];
+            let opposite = slotArr[pocket.getOpposite()]; //opposite is the pocket you just stole
+            let n = opposite.getCount();
+            var mArrO = opposite.getMarbles();
+            let j = 0;
+            for(j=1; j<= n; j++) {
+              slotArr[7].addMarble(mArrO[j-1]);
+              let coor2 = getCoor(true, b_pocket.button, b_pocket.getCount());
+              mArrO[j-1].move(coor2[0], coor2[1]);
+            }
+            opposite.emptyContents();
+  
+            let temp = slotArr[slotIndex].getMarbles()
+            slotArr[7].addMarble(temp[0]);
+            let coor2 = getCoor(true, b_pocket.button, b_pocket.getCount());
+            temp[0].move(coor2[0], coor2[1]);
+            slotArr[slotIndex].emptyContents();
+  
+          } , 1000);       
           window.alert("You stole Player A's marbles!");
+          if(checkWinner()){
+            endGame();
+          }
         }        
       }
     }
@@ -292,6 +300,7 @@ function movep2(slot) {
 }
 
 function movep1(slot) {
+  console.log(slot);
   var num = slot.getCount();
   var playAgain = false;
   var i;
@@ -329,28 +338,31 @@ function movep1(slot) {
       }
       else if (slotArr[slotIndex].getCount() == 1 && slotIndex > 7)
       {
-        window.setTimeout(function(){
-          let pocket = slotArr[slotIndex];
-          let opposite = slotArr[pocket.getOpposite()]; //opposite is the pocket you just stole
-          let n = opposite.getCount();
-          var mArrO = opposite.getMarbles();
-          console.log(n);
-          let j = 0;
-          for(j=1; j<= n; j++) {
-            slotArr[0].addMarble(mArrO[j-1]);
-            let coor2 = getCoor(false, a_pocket.button, a_pocket.getCount());
-            mArrO[j-1].move(coor2[0], coor2[1]);
-          }
-          opposite.emptyContents();
-          let temp = slotArr[slotIndex].getMarbles();
-          slotArr[0].addMarble(temp[0]);
-          let coor2 = getCoor(false, a_pocket.button, a_pocket.getCount());
-          temp[0].move(coor2[0], coor2[1]);
-          slotArr[slotIndex].emptyContents();
-        } , 1000);
         let pocket = slotArr[slotIndex];
-        if (slotArr[pocket.getOpposite()].getCount() != 0) {        
+        if (slotArr[pocket.getOpposite()].getCount() != 0) { 
+          window.setTimeout(function(){
+            let pocket = slotArr[slotIndex];
+            let opposite = slotArr[pocket.getOpposite()]; //opposite is the pocket you just stole
+            let n = opposite.getCount();
+            var mArrO = opposite.getMarbles();
+            console.log(n);
+            let j = 0;
+            for(j=1; j<= n; j++) {
+              slotArr[0].addMarble(mArrO[j-1]);
+              let coor2 = getCoor(false, a_pocket.button, a_pocket.getCount());
+              mArrO[j-1].move(coor2[0], coor2[1]);
+            }
+            opposite.emptyContents();
+            let temp = slotArr[slotIndex].getMarbles();
+            slotArr[0].addMarble(temp[0]);
+            let coor2 = getCoor(false, a_pocket.button, a_pocket.getCount());
+            temp[0].move(coor2[0], coor2[1]);
+            slotArr[slotIndex].emptyContents();
+          } , 1000);       
           window.alert("You stole Player B's marbles!");
+          if(checkWinner()){
+            endGame();
+          }
         }
       }
     }
@@ -437,8 +449,7 @@ function checkWinner() {
   for (i=8; i< 14; i++) {
     a_marb += slotArr[i].getCount();
   }
-  console.log(a_marb);
-  console.log(b_marb);
+
   if (a_marb == 0){
     for (i=1; i< 7; i++) {
       var n = slotArr[i].getCount();
