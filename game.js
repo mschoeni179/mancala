@@ -91,6 +91,8 @@ function switchTurn(p1) {
   }
   else {
     if (p1) {
+      checkWinner();
+
       document.getElementById("turn").innerHTML = "Currently Player A's turn";
       document.getElementById("A1").disabled = false;
       document.getElementById("A2").disabled = false;
@@ -107,6 +109,8 @@ function switchTurn(p1) {
 
     }
     else {
+      checkWinner();
+
       document.getElementById("turn").innerHTML = "Currently Player B's turn";
       document.getElementById("B1").disabled = false;
       document.getElementById("B2").disabled = false;
@@ -219,7 +223,6 @@ function newColor() {
 }
 
 function movep2(slot) {
-  console.log(slot);
   var num = slot.getCount();
   var i;
   var playAgain = false;
@@ -295,12 +298,12 @@ function movep2(slot) {
   slot.emptyContents();
   turn1 = !playAgain
   if (!playAgain) {
+    checkWinner();
     switchTurn(true);
   }
 }
 
 function movep1(slot) {
-  console.log(slot);
   var num = slot.getCount();
   var playAgain = false;
   var i;
@@ -345,7 +348,6 @@ function movep1(slot) {
             let opposite = slotArr[pocket.getOpposite()]; //opposite is the pocket you just stole
             let n = opposite.getCount();
             var mArrO = opposite.getMarbles();
-            console.log(n);
             let j = 0;
             for(j=1; j<= n; j++) {
               slotArr[0].addMarble(mArrO[j-1]);
@@ -373,6 +375,7 @@ function movep1(slot) {
   slot.emptyContents();
   turn1 = playAgain;
   if (!playAgain) {
+    checkWinner();
     switchTurn(false);
   }
 }
@@ -450,7 +453,7 @@ function checkWinner() {
     a_marb += slotArr[i].getCount();
   }
 
-  if (a_marb == 0){
+  if (a_marb == 0) {
     for (i=1; i< 7; i++) {
       var n = slotArr[i].getCount();
       var mArr = slotArr[i].getMarbles();
@@ -462,10 +465,11 @@ function checkWinner() {
       }
       slotArr[i].emptyContents();
     }
+    //console.log("b was moved");
     return true;
   }
   else if (b_marb == 0) {
-    for (i=1; i< 7; i++) {
+    for (i=8; i<= 13; i++) {
       var n = slotArr[i].getCount();
       var mArr = slotArr[i].getMarbles();
       var j;
@@ -476,6 +480,8 @@ function checkWinner() {
       }
       slotArr[i].emptyContents();
     }
+    //console.log("a was moved");
+
     return true;
   }
   else {
